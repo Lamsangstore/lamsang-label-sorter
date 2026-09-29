@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เรียงใบปะหน้า · Lamsang Store</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9ECEF; --paper:#FFFFFF; --ink:#16181D; --muted:#5B6270; --line:#16181D; --soft:#D5D9DF;
+  --tape:#F2B705; --tape-ink:#16181D; --warn-bg:#FFF4D6; --warn-ink:#6B4A00;
+  --jt:#D8232A; --flash:#FFCD00; --ok:#1F7A4D;
+  --sans:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --num:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#15171B; --paper:#1F2228; --ink:#EEF0F3; --muted:#A3AAB6; --line:#EEF0F3; --soft:#353A43;
+  --warn-bg:#3A300F; --warn-ink:#F6D98A; --ok:#5CC98F; } }
+:root[data-theme="dark"]{ --bg:#15171B; --paper:#1F2228; --ink:#EEF0F3; --muted:#A3AAB6; --line:#EEF0F3; --soft:#353A43;
+  --warn-bg:#3A300F; --warn-ink:#F6D98A; --ok:#5CC98F; }
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+main{max-width:860px;margin:0 auto;padding:32px 18px 64px;min-width:0}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 26px;max-width:60ch}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--tape);outline-offset:2px}
+
+/* drop label */
+.label{background:var(--paper);border:2px solid var(--line);border-radius:6px;position:relative}
+.drop{display:block;padding:34px 24px 30px;text-align:center;cursor:pointer;transition:background .15s}
+.drop::before{content:"";position:absolute;left:0;right:0;top:0;height:14px;
+  background:repeating-linear-gradient(-45deg,var(--tape) 0 14px,transparent 14px 28px);border-bottom:2px solid var(--line);border-radius:4px 4px 0 0}
+.drop.over{background:color-mix(in srgb,var(--tape) 14%,var(--paper))}
+.drop input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.drop .big{font-family:var(--num);font-weight:700;font-size:38px;line-height:1.2;margin:16px 0 8px;letter-spacing:.01em}
+.drop .sub{color:var(--muted);font-size:15px}
+.drop .btn{display:inline-block;margin-top:16px}
+.btn{background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:4px;padding:9px 18px;font-weight:600;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+
+.files{margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.files li{display:flex;align-items:center;gap:12px;background:var(--paper);border:1px solid var(--soft);border-radius:4px;padding:10px 12px;font-size:15px}
+.files .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{font-size:13px;font-weight:600;border:1.5px solid var(--line);border-radius:3px;padding:0 7px;white-space:nowrap}
+.files .x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:0 4px}
+
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:18px 0 0}
+.seg{display:inline-flex;border:2px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{border:0;background:var(--paper);color:var(--ink);padding:8px 14px;font-size:15px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:600}
+.controls[hidden]{display:none}
+.status{color:var(--muted);font-size:15px;margin-top:14px;min-height:1.6em}
+
+/* results */
+.out{margin-top:34px;display:grid;gap:26px}
+.batch{padding:0;min-width:0;overflow:hidden}
+.out>*{min-width:0}
+.batch header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:18px 20px 14px;border-bottom:2px dashed var(--line)}
+.batch h2{margin:0;font-size:21px;line-height:1.3;flex:1 1 200px;min-width:0;overflow-wrap:anywhere}
+.stats{display:flex;gap:22px;padding:16px 20px 4px;flex-wrap:wrap}
+.stat .n{font-family:var(--num);font-weight:700;font-size:44px;line-height:1}
+.stat .l{font-size:14px;color:var(--muted)}
+.ok{color:var(--ok);font-size:14px;padding:6px 20px 0}
+.dl{display:flex;flex-wrap:wrap;gap:10px;padding:16px 20px 18px}
+.dl .btn{display:inline-flex;align-items:center;gap:8px}
+.chip{display:inline-block;width:12px;height:12px;border-radius:2px;border:1.5px solid var(--line)}
+.warns{margin:0 20px 16px;background:var(--warn-bg);color:var(--warn-ink);border-radius:4px;padding:12px 14px;font-size:14.5px}
+.warns strong{display:block;margin-bottom:4px}
+.warns ul{margin:0;padding-left:18px}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;border-top:2px solid var(--line)}
+.cols section{padding:14px 20px 18px;min-width:0}
+.cols section+section{border-left:2px solid var(--line)}
+.cols h3{font-size:15px;margin:0 0 8px;font-weight:700}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tabs button{border:1.5px solid var(--soft);background:transparent;color:var(--muted);border-radius:3px;padding:2px 10px;font-size:13.5px}
+.tabs button[aria-pressed="true"]{border-color:var(--line);color:var(--ink);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td{padding:5px 0;border-bottom:1px solid var(--soft);vertical-align:baseline}
+td.pg{font-family:var(--num);font-weight:600;font-size:19px;white-space:nowrap;width:1%;padding-right:14px}
+td.c{text-align:right;color:var(--muted);white-space:nowrap;font-size:14px}
+tr.mix td{color:var(--muted)}
+.pick{list-style:none;margin:0;padding:0;columns:2;column-gap:18px;font-size:15px}
+.pick li{display:flex;justify-content:space-between;gap:8px;break-inside:avoid;padding:3px 0;border-bottom:1px solid var(--soft)}
+.pick b{font-family:var(--num);font-size:19px;font-weight:600;line-height:1.2}
+.note{font-size:13.5px;color:var(--muted);margin-top:30px;max-width:62ch}
+@media (max-width:640px){
+  main{padding:22px 14px 48px} h1{font-size:25px}
+  .cols{grid-template-columns:1fr} .cols section+section{border-left:0;border-top:2px solid var(--line)}
+  .pick{columns:1} .stat .n{font-size:38px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>เรียงใบปะหน้าตามรุ่นและสี</h1>
+  <p class="lede">วางไฟล์ PDF ใบปะหน้าจาก TikTok Shop, Shopee หรือ Lamsangstore แล้วรับไฟล์ที่เรียงรุ่น → สี → ไซส์ พร้อมแยกขนส่งและยอดหยิบของ ไฟล์ทั้งหมดประมวลผลในเครื่องนี้ ไม่ได้อัปโหลดไปไหน</p>
+
+  <label class="label drop" id="drop" tabindex="0">
+    <input type="file" id="pick" accept="application/pdf,.pdf" multiple>
+    <div class="big">ลากไฟล์ PDF มาวางตรงนี้</div>
+    <div class="sub">วางได้หลายไฟล์พร้อมกัน</div>
+    <span class="btn ghost">เลือกไฟล์</span>
+  </label>
+
+  <ul class="files" id="files"></ul>
+
+  <div class="controls" id="controls" hidden>
+    <div class="seg" role="group" aria-label="วิธีจัดไฟล์">
+      <button type="button" data-mode="separate" aria-pressed="true">แยกทีละไฟล์</button>
+      <button type="button" data-mode="merge" aria-pressed="false">รวมเป็นไฟล์เดียว</button>
+    </div>
+    <button type="button" class="btn" id="run">เรียงใบปะหน้า</button>
+  </div>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <div class="out" id="out"></div>
+
+  <p class="note">ลำดับการเรียง: เข็มขัด B → BG → กางเกง P · ในแต่ละรุ่นออเดอร์สีเดียวมาก่อน (ดำ → น้ำตาลเข้ม → น้ำตาล → น้ำตาลอ่อน → คาราเมล → กากี → ครีม → ขาว → สีอื่น) ตามด้วยออเดอร์หลายสี ส่วนออเดอร์หลายรุ่นอยู่ท้ายไฟล์ ออเดอร์ที่ใบยาวหลายหน้าจะอยู่ติดกันเสมอ</p>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+/* Lamsang label sorter — shared parsing/sorting core (browser + node) */
+(function (root) {
+  const COLORS = ['ดำ','ดำ&กากี','ดำ&ขาว','น้ำตาลเข้ม','น้ำตาล','น้ำตาลกาแฟ','กาแฟ','โกโก้',
+    'น้ำตาลอ่อน','น้ำตาลคาราเมล','คาราเมล','โอวัลติน','กากี','ขาว&กากี','ครีม',
+    'ขาวนวล','ขาว','แดง','แดงไวน์','กรม'];
+  const SIZES = ['XS','S','M','L','XL','XXL','3XL'];
+  const CODE_RE = /\b(BG|B|P)\s?(\d{2})\b/;
+  const TONES = /[\u0e48-\u0e4c]/g;
+
+  function thaiFix(s) {
+    return (s || '')
+      .replace(/\uf70a/g, '\u0e48').replace(/\uf70b/g, '\u0e49').replace(/\uf70c/g, '\u0e4a')
+      .replace(/\uf70d/g, '\u0e4b').replace(/\uf70e/g, '\u0e4c').replace(/\u0000/g, '')
+      .replace(/\u0e4d\u0e49\u0e32/g, '\u0e49\u0e33').replace(/\u0e4d\u0e32/g, '\u0e33')
+      .replace(/\u0e4d\s+\u0e32/g, '\u0e33');
+  }
+  const keyOf = s => thaiFix(s).replace(/\s+/g, '').replace(TONES, '').replace('ครมี', 'ครีม');
+  const COLOR_BY_KEY = {};
+  COLORS.forEach(c => { COLOR_BY_KEY[keyOf(c)] = c; });
+
+  function parseVariant(raw) {
+    let v = thaiFix(raw).replace(/\s*&\s*/g, '&').replace(/\s+/g, '');
+    let m = v.match(/^,(\w+?)([\u0e00-\u0e7f].*)$/);            // ",XLครมี" -> "ครมี,XL"
+    if (m) v = m[2] + ',' + m[1];
+    v = v.replace(/,\u0e4c/, '\u0e4c,');                           // "แดงไวน,์M"
+    const parts = v.split(',');
+    const size = (parts[1] || '').toUpperCase();
+    const key = keyOf(parts[0]);
+    const color = COLOR_BY_KEY[key] || parts[0];
+    return { color, size, known: !!COLOR_BY_KEY[key] };
+  }
+
+  // ---------- page model
+  function makeLines(items, tol) {
+    const sorted = items.slice().sort((a, b) => a.top - b.top || a.x - b.x);
+    const lines = [];
+    for (const it of sorted) {
+      const L = lines[lines.length - 1];
+      if (L && Math.abs(it.top - L.top) <= tol) L.items.push(it);
+      else lines.push({ top: it.top, items: [it] });
+    }
+    lines.forEach(L => { L.items.sort((a, b) => a.x - b.x); L.text = L.items.map(i => i.str).join(' '); });
+    return lines;
+  }
+  function pageText(items) { return makeLines(items, 2.5).map(l => l.text).join('\n'); }
+
+  function carrierOf(t) {
+    if (/JTTH/.test(t)) return 'J&T';
+    if (/\bTHT\d/.test(t) || /FLASH/i.test(t)) return 'Flash';
+    if (/kerry/i.test(t)) return 'Kerry';
+    if (/SPX|Shopee Xpress/.test(t)) return 'SPX';
+    return null;
+  }
+  const codeIn = s => { const m = (s || '').match(CODE_RE); return m ? m[1] + m[2] : null; };
+
+  // ---------- parsers: page -> {oid, items, tot, carrier, cont}
+  function parseTikTok(pg) {
+    const it = pg.items, text = pg.text;
+    const hp = it.find(i => i.str.startsWith('Product Name'));
+    const hs = it.find(i => i.str === 'SKU');
+    const hsel = it.find(i => i.str.startsWith('Seller SKU'));
+    const hq = hp && it.find(i => i.str === 'Qty' && Math.abs(i.top - hp.top) < 3);
+    const qt = it.find(i => i.str.startsWith('Qty Total'));
+    const top = hp ? hp.top + 2 : 0, bot = qt ? qt.top - 1 : 1e9;
+    const skuX = hs ? hs.x - 5 : 125, selX = hsel ? hsel.x - 4 : 168, qtyX = hq ? hq.x - 15 : 250;
+    const rows = makeLines(it.filter(i => i.top > top && i.top < bot), 2);
+    const items = []; let cur = null;
+    for (const r of rows) {
+      const q = r.items.filter(i => i.x >= qtyX);
+      const name = r.items.filter(i => i.x < skuX).map(i => i.str).join(' ');
+      const vr = r.items.filter(i => i.x >= skuX && i.x < selX).map(i => i.str).join(' ');
+      if (q.length && /^\d+$/.test(q[q.length - 1].str.trim())) {
+        cur = { name, raw: vr, qty: +q[q.length - 1].str.trim() }; items.push(cur);
+      } else if (cur) { cur.name += ' ' + name; if (vr) cur.raw += ' ' + vr; }
+    }
+    items.forEach(x => { x.code = codeIn(x.name); });
+    const oid = (text.match(/Order ID:\s*(\d{15,})/) || [])[1] || null;
+    const tot = (text.match(/Qty Total:\s*(\d+)/) || [])[1];
+    return { oid, items, tot: tot != null ? +tot : null, carrier: carrierOf(text) };
+  }
+
+  function parseShopee(pg) {
+    const it = pg.items, text = pg.text, W = pg.width;
+    const hash = it.find(i => i.str.trim() === '#');
+    const items = [];
+    if (hash) {
+      const hdr = it.filter(i => Math.abs(i.top - hash.top) < 3 && i.x > W * 0.5).sort((a, b) => a.x - b.x);
+      const varX = (hdr[0] ? hdr[0].x : W * 0.6) - 5;
+      const qtyX = (hdr.length > 1 ? hdr[hdr.length - 1].x : W * 0.87) - 5;
+      const foot = it.filter(i => /Order No/.test(i.str) && i.top > hash.top).sort((a, b) => a.top - b.top)[0];
+      const bot = foot ? foot.top - 1 : 1e9;
+      const rows = makeLines(it.filter(i => i.top > hash.top + 2 && i.top < bot), 3);
+      rows.forEach((r, k) => {
+        const first = r.items[0];
+        if (!first || first.x > hash.x + 12 || !/^\d+$/.test(first.str.trim())) return;
+        const q = r.items.filter(i => i.x >= qtyX);
+        if (!q.length || !/^\d+$/.test(q[q.length - 1].str.trim())) return;
+        const vr = r.items.filter(i => i.x >= varX && i.x < qtyX).map(i => i.str).join('');
+        const nameOf = row => row ? row.items.filter(i => i.x < varX).map(i => i.str).join(' ') : '';
+        const code = codeIn(nameOf(r).replace(/^\s*\d+\s*/, ' ')) || codeIn(nameOf(rows[k - 1])) || codeIn(nameOf(rows[k + 1]));
+        items.push({ code, raw: vr, qty: +q[q.length - 1].str.trim() });
+      });
+    }
+    const oid = (text.match(/Shopee Order No\.?\s*([0-9A-Z]{10,})/) || [])[1] || null;
+    const totLine = text.split('\n').find(l => /นวนรวม/.test(thaiFix(l)));
+    const tm = totLine && totLine.match(/(\d+)\s*$/);
+    return { oid, items, tot: tm ? +tm[1] : null, carrier: carrierOf(text) };
+  }
+
+  function parsePage365(pg) {
+    const it = pg.items, text = pg.text;
+    const hv = it.find(i => i.str.includes('แบบสินค้า'));
+    const hq = it.find(i => i.str.startsWith('จำนวน'));
+    const items = [];
+    if (hv && hq) {
+      const vx = hv.x - 20, qx = hq.x - 5;
+      const end = it.filter(i => i.str.startsWith('หมายเหตุ') && i.top > hv.top).sort((a, b) => a.top - b.top)[0];
+      const bot = end ? end.top - 1 : 1e9;
+      const rows = makeLines(it.filter(i => i.top > hv.top + 2 && i.top < bot), 2);
+      for (const r of rows) {
+        const name = r.items.filter(i => i.x < vx).map(i => i.str).join(' ').trim();
+        let vr = r.items.filter(i => i.x >= vx && i.x < qx).map(i => i.str).join(' ').replace(/^[\s:,.()]+/, '').trim();
+        const q = r.items.filter(i => i.x >= qx).map(i => i.str).join('').trim();
+        const m = name.match(/^(\d+)\.\s*(.*)$/);
+        if (!m || !/^\d+$/.test(q)) continue;
+        if (!vr) { const toks = m[2].split(/\s+/); vr = toks[toks.length - 1].split(',').pop(); }
+        items.push({ code: codeIn(m[2]), raw: vr, qty: +q });
+      }
+    }
+    const all = [...text.matchAll(/รวม\s+(\d+)/g)];
+    return { oid: null, items, tot: all.length ? +all[all.length - 1][1] : null,
+             carrier: carrierOf(text), cont: !text.includes('ผู้ส่ง') };
+  }
+
+  function detect(pages) {
+    const j = pages.slice(0, 3).map(p => p.text).join('\n');
+    if (/Seller SKU|Qty Total/.test(j)) return ['TikTok', parseTikTok];
+    if (/Shopee Order No/.test(j)) return ['Shopee', parseShopee];
+    return ['Lamsangstore', parsePage365];
+  }
+
+  // ---------- file -> orders
+  function ordersFromPages(fileIdx, pages) {
+    const [kind, fn] = detect(pages);
+    const orders = [];
+    pages.forEach((pg, pi) => {
+      const r = fn(pg);
+      const prev = orders[orders.length - 1];
+      const sameOrder = prev && ((r.oid && prev.oid === r.oid) || (kind === 'Lamsangstore' && r.cont));
+      if (sameOrder) {
+        prev.pages.push(pi); prev.items.push(...r.items);
+        if (r.tot != null) prev.tot = r.tot;
+      } else {
+        orders.push({ file: fileIdx, kind, oid: r.oid, pages: [pi], items: r.items, tot: r.tot, carrier: r.carrier });
+      }
+    });
+    return { kind, orders };
+  }
+
+  const mkey = code => {
+    const m = (code || '').match(/^([A-Z]+)(\d+)$/);
+    return m ? [({ B: 0, BG: 1, P: 2 })[m[1]] ?? 3, +m[2]] : [9, 99];
+  };
+  const vkey = i => [COLORS.includes(i.color) ? COLORS.indexOf(i.color) : 90, i.color,
+                     SIZES.includes(i.size) ? SIZES.indexOf(i.size) : 0];
+  function cmp(a, b) {
+    if (Array.isArray(a) && Array.isArray(b)) {
+      for (let k = 0; k < Math.min(a.length, b.length); k++) { const c = cmp(a[k], b[k]); if (c) return c; }
+      return a.length - b.length;
+    }
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+  const lab = i => (i.code || '??') + ' ' + i.color + (i.size ? ' ' + i.size : '');
+
+  function prepare(orders, fileNames) {
+    const warn = [];
+    const seen = {};
+    orders.forEach(o => { if (o.oid) seen[o.oid] = (seen[o.oid] || 0) + 1; });
+    Object.entries(seen).forEach(([k, v]) => { if (v > 1) warn.push(`ออเดอร์ซ้ำ ${k} (${v} ใบ)`); });
+    const where = o => `${fileNames[o.file]} หน้า ${o.pages[0] + 1}`;
+    for (const o of orders) {
+      if (!o.items.length) warn.push(`${where(o)}: อ่านรายการสินค้าไม่ได้`);
+      for (const it of o.items) {
+        Object.assign(it, parseVariant(it.raw));
+        if (!it.code) warn.push(`${where(o)}: หารหัสรุ่นไม่เจอ`);
+        if (!it.known) warn.push(`${where(o)}: สีที่ไม่รู้จัก "${it.color}"`);
+      }
+      const sum = o.items.reduce((s, i) => s + i.qty, 0);
+      if (o.tot != null && o.tot !== sum) warn.push(`${where(o)}: จำนวนสินค้า ${sum} ไม่ตรงกับยอดรวมบนใบ ${o.tot}`);
+      const its = o.items.slice().sort((a, b) => cmp([mkey(a.code), vkey(a)], [mkey(b.code), vkey(b)]));
+      o.sorted = its;
+      const ms = new Set(its.map(i => i.code)), sk = new Set(its.map(lab));
+      const grp = ms.size > 1 ? 2 : (sk.size > 1 ? 1 : 0);
+      o.grp = grp;
+      o.key = grp === 2 ? [9, its.map(i => [mkey(i.code), vkey(i)]), 0, [], 0]
+                        : [0, [its.length ? mkey(its[0].code) : [9, 99]], grp, its.map(vkey), sum];
+      o.group = !its.length ? 'อ่านไม่ได้' : grp === 2 ? 'หลายรุ่น'
+              : (its[0].code || '??') + (grp === 1 ? ' หลายสี' : ' ' + lab(its[0]).split(' ').slice(1).join(' '));
+      o.carrier = o.carrier || 'อื่นๆ';
+      o.qty = sum;
+    }
+    const sorted = orders.slice().sort((a, b) => cmp(a.key, b.key));
+    return { sorted, warn };
+  }
+
+  function ranges(sel) {
+    const out = []; let n = 0;
+    for (const o of sel) {
+      const a = n + 1; n += o.pages.length;
+      const last = out[out.length - 1];
+      if (last && last.group === o.group) { last.to = n; last.orders++; }
+      else out.push({ group: o.group, from: a, to: n, orders: 1 });
+    }
+    return { ranges: out, pages: n };
+  }
+  function pickList(sel) {
+    const c = {};
+    sel.forEach(o => o.items.forEach(i => { const k = lab(i); c[k] = (c[k] || 0) + i.qty; }));
+    return Object.entries(c).sort((a, b) => b[1] - a[1] || cmp(a[0], b[0]));
+  }
+
+  root.LabelSorter = { thaiFix, pageText, makeLines, ordersFromPages, prepare, ranges, pickList, parseVariant };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function(){
+  const LS = window.LabelSorter;
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const $ = s => document.querySelector(s);
+  const drop = $('#drop'), pick = $('#pick'), list = $('#files'), controls = $('#controls'),
+        runBtn = $('#run'), statusEl = $('#status'), out = $('#out');
+  let files = [];            // {file, name, bytes, pages, kind}
+  let mode = 'separate';
+  let downloads = null;
+  try { window.claude && claude.use && claude.use('downloads').then(d => { downloads = d; }).catch(() => {}); } catch (e) {}
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const today = () => { const d = new Date(); return String(d.getFullYear()).slice(2) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'); };
+  const setStatus = t => { statusEl.textContent = t; };
+
+  function renderFiles(){
+    list.innerHTML = files.map((f, i) => `<li><span class="name">${esc(f.name)}</span>
+      <span class="tag">${f.kind ? esc(f.kind) + ' · ' + f.pages.length + ' หน้า' : 'กำลังอ่าน…'}</span>
+      <button class="x" type="button" data-rm="${i}" aria-label="เอาไฟล์ ${esc(f.name)} ออก">×</button></li>`).join('');
+    controls.hidden = !files.length;
+    runBtn.disabled = !files.length || files.some(f => !f.kind);
+  }
+  list.addEventListener('click', e => {
+    const i = e.target.getAttribute('data-rm'); if (i == null) return;
+    files.splice(+i, 1); renderFiles(); if (!files.length) { out.innerHTML = ''; setStatus(''); }
+  });
+
+  async function readPages(bytes, onPage){
+    const doc = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
+    const pages = [];
+    for (let p = 1; p <= doc.numPages; p++) {
+      const pg = await doc.getPage(p); const vp = pg.getViewport({ scale: 1 });
+      const tc = await pg.getTextContent(); const seen = new Set(); const items = [];
+      for (const it of tc.items) {
+        if (!it.str || !it.str.trim()) continue;
+        const x = it.transform[4], top = vp.height - it.transform[5];
+        const k = it.str + '|' + x.toFixed(1) + '|' + top.toFixed(1);
+        if (seen.has(k)) continue; seen.add(k);
+        items.push({ str: LS.thaiFix(it.str), x, top });
+      }
+      pages.push({ items, text: LS.pageText(items), width: vp.width });
+      onPage && onPage(p, doc.numPages);
+    }
+    doc.destroy();
+    return pages;
+  }
+
+  async function addFiles(fl){
+    const pdfs = [...fl].filter(f => /\.pdf$/i.test(f.name) || f.type === 'application/pdf');
+    if (!pdfs.length) { setStatus('รองรับเฉพาะไฟล์ PDF'); return; }
+    out.innerHTML = '';
+    for (const f of pdfs) {
+      const entry = { file: f, name: f.name, bytes: null, pages: null, kind: null };
+      files.push(entry); renderFiles();
+      try {
+        entry.bytes = new Uint8Array(await f.arrayBuffer());
+        entry.pages = await readPages(entry.bytes, (p, n) => setStatus(`กำลังอ่าน ${f.name} หน้า ${p}/${n}`));
+        entry.kind = LS.ordersFromPages(0, entry.pages).kind;
+      } catch (e) {
+        files.splice(files.indexOf(entry), 1);
+        setStatus(`เปิด ${f.name} ไม่ได้ ไฟล์อาจเสียหรือมีรหัสผ่าน`);
+      }
+      renderFiles();
+    }
+    if (files.every(f => f.kind)) setStatus(`พร้อมเรียง ${files.length} ไฟล์`);
+  }
+
+  pick.addEventListener('change', () => { addFiles(pick.files); pick.value = ''; });
+  drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick.click(); } });
+  ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => addFiles(e.dataTransfer.files));
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    mode = b.dataset.mode;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+
+  async function buildPdf(sel, srcFiles){
+    const out = await PDFLib.PDFDocument.create();
+    const cache = new Map();
+    for (const o of sel) {
+      const f = srcFiles[o.file];
+      if (!cache.has(f)) cache.set(f, await PDFLib.PDFDocument.load(f.bytes, { ignoreEncryption: true }));
+      const pages = await out.copyPages(cache.get(f), o.pages);
+      pages.forEach(p => out.addPage(p));
+    }
+    return new Blob([await out.save()], { type: 'application/pdf' });
+  }
+
+  async function saveBlob(blob, filename, btn){
+    if (downloads) {
+      try { await downloads.save({ filename, data: blob }); btn.textContent = 'บันทึกแล้ว · ' + filename; }
+      catch (e) { if (e && e.code !== 'declined') setStatus('บันทึกไฟล์ไม่ได้ (' + (e.code || 'error') + ')'); }
+      return;
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  }
+
+  function batchHtml(b, idx){
+    const outs = b.outputs;
+    const tabs = outs.length > 1 ? `<div class="tabs" role="group" aria-label="เลือกไฟล์">${outs.map((o, i) =>
+      `<button type="button" data-b="${idx}" data-t="${i}" aria-pressed="${i === 0}">${esc(o.label)}</button>`).join('')}</div>` : '';
+    const chip = c => c === 'J&T' ? `<span class="chip" style="background:var(--jt)"></span>` : c === 'Flash' ? `<span class="chip" style="background:var(--flash)"></span>` : '';
+    return `<article class="label batch">
+      <header><h2>${esc(b.title)}</h2><span class="tag">${esc(b.kinds)}</span></header>
+      <div class="stats">
+        <div class="stat"><div class="n">${b.orders}</div><div class="l">ออเดอร์</div></div>
+        <div class="stat"><div class="n">${b.pages}</div><div class="l">หน้า</div></div>
+        <div class="stat"><div class="n">${b.pieces}</div><div class="l">ชิ้น</div></div>
+        ${b.carriers.length > 1 ? b.carriers.map(c => `<div class="stat"><div class="n">${c[1]}</div><div class="l">${esc(c[0])}</div></div>`).join('') : ''}
+      </div>
+      ${b.warn.length ? '' : `<div class="ok">✓ ยอดชิ้นทุกออเดอร์ตรงกับยอดรวมบนใบ</div>`}
+      <div class="dl">${outs.map((o, i) => `<button type="button" class="btn${i ? ' ghost' : ''}" data-dl="${idx}:${i}">${chip(o.carrier)}ดาวน์โหลด ${esc(o.label)} (${o.pages} หน้า)</button>`).join('')}</div>
+      ${b.warn.length ? `<div class="warns"><strong>ตรวจก่อนปริ้น ${b.warn.length} จุด</strong><ul>${b.warn.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div>` : ''}
+      <div class="cols">
+        <section><h3>ช่วงหน้า</h3>${tabs}<div data-ranges="${idx}">${rangesHtml(outs[0].ranges)}</div></section>
+        <section><h3>ยอดหยิบของ</h3><ul class="pick">${b.pick.map(([k, v]) => `<li><span>${esc(k)}</span><b>${v}</b></li>`).join('')}</ul></section>
+      </div></article>`;
+  }
+  function rangesHtml(rs){
+    return `<table>${rs.map(r => `<tr class="${/หลาย/.test(r.group) ? 'mix' : ''}"><td class="pg">${r.from === r.to ? r.from : r.from + '–' + r.to}</td><td>${esc(r.group)}</td><td class="c">${r.orders} ออเดอร์</td></tr>`).join('')}</table>`;
+  }
+
+  let batches = [];
+  out.addEventListener('click', async e => {
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.t != null) {
+      const b = batches[+t.dataset.b];
+      out.querySelectorAll(`.tabs button[data-b="${t.dataset.b}"]`).forEach(x => x.setAttribute('aria-pressed', String(x === t)));
+      out.querySelector(`[data-ranges="${t.dataset.b}"]`).innerHTML = rangesHtml(b.outputs[+t.dataset.t].ranges);
+    }
+    if (t.dataset.dl) {
+      const [bi, oi] = t.dataset.dl.split(':').map(Number); const o = batches[bi].outputs[oi];
+      const old = t.innerHTML; t.disabled = true; t.textContent = 'กำลังสร้างไฟล์…';
+      try { o.blob = o.blob || await buildPdf(o.sel, batches[bi].src); t.innerHTML = old; t.disabled = false; await saveBlob(o.blob, o.filename, t); }
+      catch (err) { t.innerHTML = old; t.disabled = false; setStatus('สร้างไฟล์ไม่สำเร็จ: ' + (err.message || err)); }
+    }
+  });
+
+  function makeBatch(src, title){
+    let all = [];
+    src.forEach((f, i) => { all = all.concat(LS.ordersFromPages(i, f.pages).orders); });
+    const { sorted, warn } = LS.prepare(all, src.map(f => f.name));
+    const kinds = [...new Set(src.map(f => f.kind))];
+    const prefix = (kinds.length === 1 ? kinds[0] : 'รวม') + '-' + today();
+    const byCar = new Map(); sorted.forEach(o => { if (!byCar.has(o.carrier)) byCar.set(o.carrier, []); byCar.get(o.carrier).push(o); });
+    const outputs = [];
+    const mk = (sel, label, carrier, suffix) => { const r = LS.ranges(sel); outputs.push({ sel, label, carrier, pages: r.pages, ranges: r.ranges, filename: prefix + suffix + '-เรียงตามรุ่นสี.pdf' }); };
+    if (byCar.size > 1) byCar.forEach((sel, c) => mk(sel, c, c, '-' + c.replace('&', '')));
+    mk(sorted, byCar.size > 1 ? 'ทุกขนส่ง' : 'ไฟล์ที่เรียงแล้ว', null, '');
+    const pick = LS.pickList(sorted);
+    return { src, title, kinds: kinds.join(' + '), orders: sorted.length, pages: outputs[outputs.length - 1].pages,
+             pieces: pick.reduce((s, x) => s + x[1], 0), carriers: [...byCar].map(([c, s]) => [c, s.length]),
+             warn, pick, outputs };
+  }
+
+  runBtn.addEventListener('click', () => {
+    if (!window.PDFLib) { setStatus('โหลดตัวสร้าง PDF ไม่สำเร็จ ลองรีเฟรชหน้า'); return; }
+    batches = mode === 'merge' ? [makeBatch(files, files.length > 1 ? `รวม ${files.length} ไฟล์` : files[0].name)]
+                               : files.map(f => makeBatch([f], f.name));
+    out.innerHTML = batches.map(batchHtml).join('');
+    const w = batches.reduce((s, b) => s + b.warn.length, 0);
+    setStatus(w ? `เรียงเสร็จ มี ${w} จุดที่ควรตรวจ` : 'เรียงเสร็จแล้ว กดดาวน์โหลดไฟล์ที่ต้องการ');
+    out.firstElementChild && out.firstElementChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  if (!window.pdfjsLib) setStatus('โหลดตัวอ่าน PDF ไม่สำเร็จ ลองรีเฟรชหน้า');
+})();
+</script>
+</body>
+</html>
