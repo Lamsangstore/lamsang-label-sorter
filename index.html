@@ -7,21 +7,22 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#E9ECEF; --paper:#FFFFFF; --ink:#16181D; --muted:#5B6270; --line:#16181D; --soft:#D5D9DF;
-  --tape:#F2B705; --tape-ink:#16181D; --warn-bg:#FFF4D6; --warn-ink:#6B4A00;
-  --jt:#D8232A; --flash:#FFCD00; --ok:#1F7A4D;
-  --sans:"IBM Plex Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
-  --num:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  /* ธีมกลาง Lamsang (LAMSANG-THEME.md) — ทอง brand-600 · พื้น slate */
+  --bg:#f8fafc; --paper:#FFFFFF; --ink:#0f172a; --muted:#64748b; --line:#cbd5e1; --soft:#e2e8f0;
+  --tape:#a8853f; --tape-ink:#FFFFFF; --warn-bg:#fffbeb; --warn-ink:#b45309;
+  --jt:#D8232A; --flash:#FFCD00; --ok:#059669; --danger:#dc2626;
+  --sans:"Noto Sans Thai",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --num:"Noto Sans Thai",system-ui,-apple-system,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#15171B; --paper:#1F2228; --ink:#EEF0F3; --muted:#A3AAB6; --line:#EEF0F3; --soft:#353A43;
+  --bg:#1c1b19; --paper:#2a2825; --ink:#f5f5f4; --muted:#a8a29e; --line:#3a3833; --soft:#3a3833;
   --warn-bg:#3A300F; --warn-ink:#F6D98A; --ok:#5CC98F; } }
-:root[data-theme="dark"]{ --bg:#15171B; --paper:#1F2228; --ink:#EEF0F3; --muted:#A3AAB6; --line:#EEF0F3; --soft:#353A43;
+:root[data-theme="dark"]{ --bg:#1c1b19; --paper:#2a2825; --ink:#f5f5f4; --muted:#a8a29e; --line:#3a3833; --soft:#3a3833;
   --warn-bg:#3A300F; --warn-ink:#F6D98A; --ok:#5CC98F; }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
@@ -44,8 +45,8 @@ button{font:inherit;cursor:pointer}
 .drop .big{font-family:var(--num);font-weight:700;font-size:38px;line-height:1.2;margin:16px 0 8px;letter-spacing:.01em}
 .drop .sub{color:var(--muted);font-size:15px}
 .drop .btn{display:inline-block;margin-top:16px}
-.btn{background:var(--ink);color:var(--paper);border:2px solid var(--ink);border-radius:4px;padding:9px 18px;font-weight:600;font-size:15px}
-.btn.ghost{background:transparent;color:var(--ink)}
+.btn{background:var(--tape);color:var(--tape-ink);border:2px solid var(--tape);border-radius:4px;padding:9px 18px;font-weight:600;font-size:15px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 .btn:disabled{opacity:.45;cursor:default}
 
 .files{margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
@@ -57,7 +58,7 @@ button{font:inherit;cursor:pointer}
 .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:18px 0 0}
 .seg{display:inline-flex;border:2px solid var(--line);border-radius:4px;overflow:hidden}
 .seg button{border:0;background:var(--paper);color:var(--ink);padding:8px 14px;font-size:15px}
-.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--tape);color:var(--tape-ink);font-weight:600}
 .controls[hidden]{display:none}
 .status{color:var(--muted);font-size:15px;margin-top:14px;min-height:1.6em}
 
@@ -83,7 +84,7 @@ button{font:inherit;cursor:pointer}
 .cols h3{font-size:15px;margin:0 0 8px;font-weight:700}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .tabs button{border:1.5px solid var(--soft);background:transparent;color:var(--muted);border-radius:3px;padding:2px 10px;font-size:13.5px}
-.tabs button[aria-pressed="true"]{border-color:var(--line);color:var(--ink);font-weight:600}
+.tabs button[aria-pressed="true"]{border-color:var(--tape);background:var(--tape);color:var(--tape-ink);font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:15px}
 td{padding:5px 0;border-bottom:1px solid var(--soft);vertical-align:baseline}
 td.pg{font-family:var(--num);font-weight:600;font-size:19px;white-space:nowrap;width:1%;padding-right:14px}
@@ -92,6 +93,8 @@ tr.mix td{color:var(--muted)}
 .pick{list-style:none;margin:0;padding:0;columns:2;column-gap:18px;font-size:15px}
 .pick li{display:flex;justify-content:space-between;gap:8px;break-inside:avoid;padding:3px 0;border-bottom:1px solid var(--soft)}
 .pick b{font-family:var(--num);font-size:19px;font-weight:600;line-height:1.2}
+/* ตัวเลขใหญ่ใช้ Noto Sans Thai แบบกว้างเท่ากัน ให้หลักตรงกัน */
+.stat .n,td.pg,.pick b{font-variant-numeric:tabular-nums}
 .note{font-size:13.5px;color:var(--muted);margin-top:30px;max-width:62ch}
 @media (max-width:640px){
   main{padding:22px 14px 48px} h1{font-size:25px}
@@ -177,7 +180,8 @@ window.HubLogin = (function () {
 
   /**
    * ประตูกั้นเต็มจอ — ใช้แอปต่อไม่ได้จนกว่าจะเข้าสู่ระบบ
-   * **หน้าตาเดียวกับหน้าล็อกอิน HRIS** (ร้านสั่ง 30 ก.ย. 2569) พื้นดำ-ทอง · การ์ดขาวขอบทอง · ฟอนต์ Prompt
+   * **หน้าตาเดียวกับหน้าล็อกอิน HRIS** (ร้านสั่ง 30 ก.ย. 2569) พื้นดำ-ทอง · การ์ดขาวขอบทอง
+   * สี/ฟอนต์ตามธีมกลาง LAMSANG-THEME.md (4 ต.ค. 2569): panel-900 #1c1b19 · ทอง brand-600 #a8853f · Noto Sans Thai
    * ชุดสีเดียวกับ `src/components/hris/HrisShell.tsx` ของเว็บร้าน — แก้ที่หนึ่งต้องตามไปแก้อีกที่
    */
   function lock(msg) {
@@ -187,7 +191,7 @@ window.HubLogin = (function () {
       if (!document.getElementById('hub-login-font')) {
         const f = document.createElement('link');
         f.id = 'hub-login-font'; f.rel = 'stylesheet';
-        f.href = 'https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap';
+        f.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap';
         document.head.appendChild(f);
       }
     } catch (e) {}
@@ -195,15 +199,15 @@ window.HubLogin = (function () {
     el.id = 'hub-login-gate';
     el.setAttribute('style', [
       'position:fixed', 'inset:0', 'z-index:2147483600', 'overflow:auto',
-      'background:#18181b',
-      'background-image:radial-gradient(circle at 5% 5%,rgba(234,179,8,.16),transparent 38%),' +
-        'radial-gradient(circle at 95% 95%,rgba(202,138,4,.16),transparent 38%)',
+      'background:#1c1b19',
+      'background-image:radial-gradient(circle at 5% 5%,rgba(168,133,63,.16),transparent 38%),' +
+        'radial-gradient(circle at 95% 95%,rgba(191,156,79,.16),transparent 38%)',
       'display:flex', 'flex-direction:column', 'align-items:center', 'justify-content:center',
-      'padding:24px 16px', "font-family:'Prompt',sans-serif", 'color:#27272a', 'text-align:center'
+      'padding:24px 16px', "font-family:'Noto Sans Thai',system-ui,sans-serif", 'color:#27272a', 'text-align:center'
     ].join(';'));
     el.innerHTML =
       '<div style="width:100%;max-width:448px;box-sizing:border-box;background:#fff;border-radius:16px;' +
-        'border-top:4px solid #eab308;padding:36px 32px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5)">' +
+        'border-top:4px solid #a8853f;padding:36px 32px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5)">' +
         '<img src="https://lh3.googleusercontent.com/d/1wFGzcl5Y3yEfd39sA2LTbrgeNkgVxm27" alt="Lamsang" ' +
           'style="height:112px;width:auto;margin:0 auto 16px;display:block;object-fit:contain">' +
         '<div style="font-size:30px;font-weight:700;letter-spacing:.025em;color:#27272a">Lamsang Group</div>' +
@@ -212,7 +216,7 @@ window.HubLogin = (function () {
           'border:1px solid #e4e4e7;font-size:14px;color:#52525b">' +
           '🔒 ' + (msg || 'ต้องเข้าสู่ระบบก่อนใช้งาน') + '</div>' +
         '<a href="' + loginHref() + '" style="display:flex;align-items:center;justify-content:center;gap:8px;' +
-          'padding:13px 16px;border-radius:12px;background:#eab308;color:#18181b;font-weight:700;font-size:16px;' +
+          'padding:13px 16px;border-radius:12px;background:#a8853f;color:#fff;font-weight:700;font-size:16px;' +
           'text-decoration:none;box-shadow:0 4px 6px -1px rgba(0,0,0,.1)">' +
           '<svg viewBox="0 0 512 512" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M217.9 105.9 340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9-18.7 0-33.9-15.2-33.9-33.9V320H32c-17.7 0-32-14.3-32-32v-64c0-17.7 14.3-32 32-32h128v-62.1c0-18.7 15.2-33.9 33.9-33.9 9 0 17.6 3.6 24 9.9zM352 416h64c17.7 0 32-14.3 32-32V128c0-17.7-14.3-32-32-32h-64c-17.7 0-32-14.3-32-32s14.3-32 32-32h64c53 0 96 43 96 96v256c0 53-43 96-96 96h-64c-17.7 0-32-14.3-32-32s14.3-32 32-32z"/></svg>' +
           'เข้าสู่ระบบ</a>' +
@@ -918,7 +922,7 @@ HubLogin.mountAccount(document.getElementById('hub-account'), {
              hover: 'color-mix(in srgb,var(--tape) 14%,var(--paper))' },
   avatar: { size: 26, radius: '4px', bg: 'var(--tape)', color: 'var(--tape-ink)' },
   menu: { bg: 'var(--paper)', border: '2px solid var(--line)', radius: '6px', shadow: '5px 5px 0 var(--line)',
-          color: 'var(--ink)', sub: 'var(--muted)', divider: 'var(--soft)', danger: 'var(--jt)',
+          color: 'var(--ink)', sub: 'var(--muted)', divider: 'var(--soft)', danger: 'var(--danger)',
           badgeBg: 'var(--warn-bg)', badgeColor: 'var(--warn-ink)',
           hover: 'color-mix(in srgb,var(--tape) 14%,var(--paper))' }
 });
